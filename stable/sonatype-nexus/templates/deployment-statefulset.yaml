@@ -199,11 +199,19 @@ spec:
               value: "60"
             - name: TRIGGER_FILE
               value: .backup
+            {{- if .Values.nexusBackup.credentials.secret }}
+            - name: CLOUD_IAM_SERVICE_ACCOUNT_KEY_PATH
+              value: .Values.nexusBackup.credentials.filename
+            {{- end }}
           volumeMounts:
             - mountPath: /nexus-data
               name: {{ template "nexus.fullname" . }}-data
             - mountPath: /nexus-data/backup
               name: {{ template "nexus.fullname" . }}-backup
+            {{- if .Values.nexusBackup.credentials.secret }}
+            - mountPath: /secret
+              name: nexus-gcp-credentials
+            {{- end }}
         {{- end }}
         {{- if .Values.deployment.additionalContainers }}
 {{ toYaml .Values.deployment.additionalContainers | indent 8 }}
@@ -253,6 +261,11 @@ spec:
         - name: {{ template "nexus.name" . }}-secret
           secret:
             secretName: {{ template "nexus.name" . }}-secret
+        {{- end }}
+        {{- if .Values.nexusBackup.credentials.secret }}
+        - name: nexus-gcp-credentials
+          secret:
+            secretName: {{ .Values.nexusBackup.credentials.secret }}
         {{- end }}
         {{- if .Values.deployment.additionalVolumes }}
 {{ toYaml .Values.deployment.additionalVolumes | indent 8 }}

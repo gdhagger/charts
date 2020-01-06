@@ -141,6 +141,9 @@ nexusBackup:
   env:
     targetBucket:
   nexusAdminPassword: "admin123"
+  # credentials:
+  #   filename: credentials.json
+  #   secret: nexus-backup-credentials
   persistence:
     enabled: true
     # existingClaim:
